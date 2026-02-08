@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consulta de Reportes Académicos</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 500px;
+            width: 100%;
+            padding: 40px;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            color: white;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+
+        h1 {
+            color: #2c3e50;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .search-section {
+            margin-bottom: 30px;
+        }
+
+        .search-label {
+            display: block;
+            color: #2c3e50;
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #95a5a6;
+            font-size: 20px;
+        }
+
+        input {
+            width: 100%;
+            padding: 15px 15px 15px 50px;
+            border: 2px solid #ecf0f1;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        input::placeholder {
+            color: #bdc3c7;
+        }
+
+        .search-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+
+        .search-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+        }
+
+        .search-btn:active {
+            transform: translateY(0);
+        }
+
+        .search-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .results {
+            margin-top: 30px;
+            display: none;
+        }
+
+        .results.show {
+            display: block;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .result-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-left: 5px solid #667eea;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .result-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .result-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .result-info {
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+
+        .result-id {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            margin-right: 10px;
+            font-weight: 600;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 5px solid #dc3545;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+            animation: shake 0.5s ease-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .loading {
+            text-align: center;
+            color: #7f8c8d;
+            padding: 20px;
+            display: none;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .spinner {
+            border: 3px solid #ecf0f1;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .info-box {
+            background: #d1ecf1;
+            color: #0c5460;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 5px solid #17a2b8;
+            margin-bottom: 25px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #ecf0f1;
+            color: #95a5a6;
+            font-size: 12px;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .container {
+                padding: 30px 20px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .subtitle {
+                font-size: 13px;
+            }
+        }
+
+        /* Modal para mostrar el reporte */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal.show {
+            display: flex;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 500px;
+            width: 100%;
+            position: relative;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 28px;
+            color: #95a5a6;
+            cursor: pointer;
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.3s;
+        }
+
+        .modal-close:hover {
+            background: #ecf0f1;
+            color: #2c3e50;
+        }
+
+        .modal-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .modal-header h2 {
+            color: #2c3e50;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .modal-header .student-name {
+            color: #667eea;
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .download-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 10px 30px rgba(40, 167, 69, 0.3);
+            margin-bottom: 10px;
+        }
+
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 40px rgba(40, 167, 69, 0.4);
+        }
+
+        .view-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+
+        .view-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+        }
+
+        .modal-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .modal-info-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .modal-info-item:last-child {
+            border-bottom: none;
+        }
+
+        .modal-info-label {
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+
+        .modal-info-value {
+            color: #2c3e50;
+            font-weight: 600;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">📊</div>
+            <h1>Consulta de Reportes</h1>
+            <p class="subtitle">CONCENTRACIÓN EDUCATIVA DEL SUR DE MONTELÍBANO<br>Reportes Académicos Individuales</p>
+        </div>
+
+        <div class="info-box">
+            💡 <strong>Instrucciones:</strong> Ingresa el ID del estudiante (ej: 114001) o el apellido completo para buscar el reporte académico.
+        </div>
+
+        <div class="search-section">
+            <label class="search-label">Buscar Estudiante</label>
+            
+            <div class="input-group">
+                <span class="input-icon">🔢</span>
+                <input 
+                    type="text" 
+                    id="searchInput" 
+                    placeholder="Escribe el ID o apellido del estudiante"
+                    autocomplete="off"
+                >
+            </div>
+
+            <button class="search-btn" onclick="buscarEstudiante()">
+                🔍 Buscar Reporte
+            </button>
+        </div>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Buscando...</p>
+        </div>
+
+        <div class="error-message" id="errorMessage">
+            ❌ No se encontraron estudiantes con ese ID o apellido. Verifica los datos e intenta nuevamente.
+        </div>
+
+        <div class="results" id="results">
+            <!-- Los resultados se mostrarán aquí -->
+        </div>
+
+        <div class="footer">
+            Sistema de consulta de reportes académicos<br>
+            Para asistencia, contacta a la coordinación académica
+        </div>
+    </div>
+
+    <!-- Modal para mostrar opciones del reporte -->
+    <div class="modal" id="reportModal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="cerrarModal()">&times;</span>
+            <div class="modal-header">
+                <h2>Reporte Encontrado</h2>
+                <div class="student-name" id="modalStudentName"></div>
+            </div>
+
+            <div class="modal-info" id="modalInfo">
+                <!-- Información del estudiante -->
+            </div>
+
+            <button class="view-btn" onclick="verReporte()">
+                👁️ Ver Reporte en Línea
+            </button>
+            <button class="download-btn" onclick="descargarReporte()">
+                📥 Descargar Reporte (PDF)
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let estudiantesData = [];
+        let estudianteSeleccionado = null;
+
+        // Cargar datos de estudiantes
+        async function cargarDatos() {
+            try {
+                const response = await fetch('estudiantes_index.json');
+                estudiantesData = await response.json();
+                console.log('Datos cargados:', estudiantesData.length, 'estudiantes');
+            } catch (error) {
+                console.error('Error cargando datos:', error);
+                mostrarError('Error al cargar los datos. Por favor, recarga la página.');
+            }
+        }
+
+        // Buscar estudiante
+        function buscarEstudiante() {
+            const searchValue = document.getElementById('searchInput').value.trim();
+            
+            if (!searchValue) {
+                mostrarError('Por favor ingresa un ID o apellido para buscar.');
+                return;
+            }
+
+            // Mostrar loading
+            document.getElementById('loading').classList.add('show');
+            document.getElementById('results').classList.remove('show');
+            document.getElementById('errorMessage').classList.remove('show');
+
+            // Simular delay de búsqueda para mejor UX
+            setTimeout(() => {
+                realizarBusqueda(searchValue);
+            }, 500);
+        }
+
+        function realizarBusqueda(searchValue) {
+            const resultados = [];
+
+            // Buscar por ID (número exacto)
+            if (/^\d+$/.test(searchValue)) {
+                const id = parseInt(searchValue);
+                const estudiantePorId = estudiantesData.find(e => e.id === id);
+                if (estudiantePorId) {
+                    resultados.push(estudiantePorId);
+                }
+            }
+
+            // Buscar por apellido (búsqueda parcial, case-insensitive)
+            const apellidoLower = searchValue.toLowerCase();
+            const estudiantesPorApellido = estudiantesData.filter(e => 
+                e.apellido.toLowerCase().includes(apellidoLower)
+            );
+            
+            // Combinar resultados sin duplicados
+            estudiantesPorApellido.forEach(est => {
+                if (!resultados.find(r => r.id === est.id)) {
+                    resultados.push(est);
+                }
+            });
+
+            // Ocultar loading
+            document.getElementById('loading').classList.remove('show');
+
+            // Mostrar resultados
+            if (resultados.length === 0) {
+                mostrarError('No se encontraron estudiantes con ese ID o apellido. Verifica los datos e intenta nuevamente.');
+            } else if (resultados.length === 1) {
+                // Si solo hay un resultado, abrir directamente el modal
+                abrirModal(resultados[0]);
+            } else {
+                // Si hay múltiples resultados, mostrar lista
+                mostrarResultados(resultados);
+            }
+        }
+
+        function mostrarResultados(resultados) {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = `
+                <h3 style="color: #2c3e50; margin-bottom: 15px; font-size: 18px;">
+                    📋 Se encontraron ${resultados.length} estudiantes:
+                </h3>
+            `;
+
+            resultados.forEach(estudiante => {
+                const card = document.createElement('div');
+                card.className = 'result-card';
+                card.onclick = () => abrirModal(estudiante);
+                card.innerHTML = `
+                    <div class="result-name">${estudiante.nombre} ${estudiante.apellido}</div>
+                    <div class="result-info">
+                        <span class="result-id">ID: ${estudiante.id}</span>
+                        <span>${estudiante.salon}</span>
+                    </div>
+                `;
+                resultsDiv.appendChild(card);
+            });
+
+            resultsDiv.classList.add('show');
+        }
+
+        function abrirModal(estudiante) {
+            estudianteSeleccionado = estudiante;
+            
+            document.getElementById('modalStudentName').textContent = 
+                `${estudiante.nombre} ${estudiante.apellido}`;
+            
+            document.getElementById('modalInfo').innerHTML = `
+                <div class="modal-info-item">
+                    <span class="modal-info-label">ID Estudiante:</span>
+                    <span class="modal-info-value">${estudiante.id}</span>
+                </div>
+                <div class="modal-info-item">
+                    <span class="modal-info-label">Salón:</span>
+                    <span class="modal-info-value">${estudiante.salon}</span>
+                </div>
+                <div class="modal-info-item">
+                    <span class="modal-info-label">Nombre Completo:</span>
+                    <span class="modal-info-value">${estudiante.nombre} ${estudiante.apellido}</span>
+                </div>
+            `;
+            
+            document.getElementById('reportModal').classList.add('show');
+        }
+
+        function cerrarModal() {
+            document.getElementById('reportModal').classList.remove('show');
+            estudianteSeleccionado = null;
+        }
+
+        function verReporte() {
+            if (estudianteSeleccionado) {
+                // Abrir el reporte HTML en una nueva pestaña
+                window.open(`reportes/${estudianteSeleccionado.id}.html`, '_blank');
+                
+                // Cerrar el modal después de abrir el reporte
+                setTimeout(() => {
+                    cerrarModal();
+                }, 500);
+            }
+        }
+
+        function descargarReporte() {
+            if (estudianteSeleccionado) {
+                // Abrir el reporte y sugerir imprimir/guardar como PDF
+                const reportWindow = window.open(`reportes/${estudianteSeleccionado.id}.html`, '_blank');
+                
+                // Mostrar mensaje de ayuda
+                setTimeout(() => {
+                    alert(`💡 Para descargar como PDF:\n\n1. Espera a que cargue el reporte\n2. Haz clic en el botón "Imprimir / Guardar PDF"\n3. Selecciona "Guardar como PDF" en el destino\n\nO usa Ctrl+P (Windows) / Cmd+P (Mac) y guarda como PDF.`);
+                }, 1000);
+                
+                // Cerrar el modal
+                setTimeout(() => {
+                    cerrarModal();
+                }, 500);
+            }
+        }
+
+        function mostrarError(mensaje) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = '❌ ' + mensaje;
+            errorDiv.classList.add('show');
+            
+            setTimeout(() => {
+                errorDiv.classList.remove('show');
+            }, 5000);
+        }
+
+        // Event listener para enter en el input
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                buscarEstudiante();
+            }
+        });
+
+        // Cerrar modal al hacer clic fuera
+        document.getElementById('reportModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                cerrarModal();
+            }
+        });
+
+        // Cargar datos al iniciar
+        cargarDatos();
+    </script>
+</body>
+</html>
