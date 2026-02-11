@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Consulta de Reportes Académicos</title>
+    <title>Consulta de Reportes CESUM</title>
     <style>
         * {
             margin: 0;
@@ -47,12 +47,12 @@
             margin-bottom: 35px;
         }
 
-        /* MODIFICACIÓN: Estilos para el contenedor del logo */
+        /* Estilos para el contenedor del logo */
         .logo {
-            width: 90px; /* Un poco más grande para que el escudo se vea bien */
+            width: 90px;
             height: 90px;
-            background: white; /* Fondo blanco para que resalte el escudo si es PNG transparente */
-            border: 4px solid #667eea; /* Borde del color del tema */
+            background: white; 
+            border: 4px solid #667eea;
             border-radius: 50%;
             margin: 0 auto 20px;
             display: flex;
@@ -62,7 +62,7 @@
             overflow: hidden;
         }
 
-        /* MODIFICACIÓN: Estilo para la imagen del escudo */
+        /* Estilo para la imagen */
         .logo img {
             width: 85%;
             height: 85%;
@@ -275,13 +275,17 @@
             font-size: 12px;
         }
 
-        /* MODIFICACIÓN: Estilo para el crédito del diseñador */
         .designer-credit {
             margin-top: 10px;
             font-size: 13px;
             color: #667eea;
             font-weight: 600;
             letter-spacing: 0.5px;
+        }
+        
+        /* Ajuste para la segunda línea de crédito para que no tenga tanto margen superior */
+        .designer-credit + .designer-credit {
+            margin-top: 2px;
         }
 
         /* Responsive */
@@ -291,7 +295,7 @@
             .subtitle { font-size: 13px; }
         }
 
-        /* Modal styles (sin cambios mayores) */
+        /* Modal styles */
         .modal {
             display: none;
             position: fixed;
@@ -356,7 +360,7 @@
     <div class="container">
         <div class="header">
             <div class="logo">
-                <img src="cesum.jpg" alt="Escudo Colegio">
+                <img src="cesum.jpg" alt="Escudo CESUM">
             </div>
             <h1>Consulta de Reportes</h1>
             <p class="subtitle">CONCENTRACIÓN EDUCATIVA DEL SUR DE MONTELÍBANO<br>Reportes Académicos Individuales</p>
@@ -400,6 +404,7 @@
             Sistema de consulta de reportes académicos<br>
             Para asistencia, contacta a la coordinación académica
             <div class="designer-credit">Diseñado por: Froylan Jiménez</div>
+            <div class="designer-credit">Grupo SOFA editores</div>
         </div>
     </div>
 
